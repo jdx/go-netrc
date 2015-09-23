@@ -35,3 +35,21 @@ func (s *NetrcSuite) TestSampleMulti(c *C) {
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
 }
+
+func (s *NetrcSuite) TestNewlineless(c *C) {
+	f, err := netrc.Parse("./examples/newlineless.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("m").Login, Equals, "l")
+	c.Check(f.Machine("m").Password, Equals, "p")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}
+
+func (s *NetrcSuite) TestBadDefaultOrder(c *C) {
+	f, err := netrc.Parse("./examples/bad_default_order.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("mail.google.com").Login, Equals, "joe@gmail.com")
+	c.Check(f.Machine("mail.google.com").Password, Equals, "somethingSecret")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}

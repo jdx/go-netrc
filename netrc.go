@@ -17,6 +17,7 @@ var ErrInvalidNetrc = errors.New("Invalid netrc")
 // Netrc file
 type Netrc struct {
 	Path     string
+	Default  *Machine
 	machines []*Machine
 	preChars string
 }
@@ -30,6 +31,7 @@ type Machine struct {
 	loginWS    string
 	passwordWS string
 	postChars  string
+	isDefault  bool
 }
 
 // Parse the netrc file at the given path
@@ -124,6 +126,11 @@ func parse(scanner *bufio.Scanner) (*Netrc, error) {
 	var machine *Machine
 	for scanner.Scan() {
 		token := scanner.Text()
+		if token == "default" {
+			machine = &Machine{}
+			n.Default = machine
+			n.machines = append(n.machines, machine)
+		}
 		if token == "machine" {
 			machine = &Machine{}
 			n.machines = append(n.machines, machine)
