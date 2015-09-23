@@ -159,3 +159,19 @@ func (m *Machine) Get(name string) string {
 		i = i + 4
 	}
 }
+
+// Set a property on the machine
+func (m *Machine) Set(name, value string) {
+	i := 4
+	if m.IsDefault {
+		i = 2
+	}
+	for i+2 < len(m.tokens) {
+		if m.tokens[i] == name {
+			m.tokens[i+2] = value
+			return
+		}
+		i = i + 4
+	}
+	m.tokens = append(m.tokens, "  ", name, " ", value, "\n")
+}

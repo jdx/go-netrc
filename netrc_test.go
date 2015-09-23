@@ -25,6 +25,14 @@ func (s *NetrcSuite) TestLogin(c *C) {
 	c.Check(f.Render(), Equals, string(body))
 }
 
+func (s *NetrcSuite) TestSetPassword(c *C) {
+	f, err := netrc.Parse("./examples/login.netrc")
+	c.Assert(err, IsNil)
+	heroku := f.Machine("api.heroku.com")
+	heroku.Set("password", "foobar")
+	c.Check(f.Render(), Equals, "# this is my login netrc\nmachine api.heroku.com\n  login jeff@heroku.com # this is my username\n  password foobar\n")
+}
+
 func (s *NetrcSuite) TestSampleMulti(c *C) {
 	f, err := netrc.Parse("./examples/sample_multi.netrc")
 	c.Assert(err, IsNil)
