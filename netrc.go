@@ -94,10 +94,10 @@ func lex(file io.Reader) []string {
 						i = len(data)
 					}
 					for i < len(data) {
-						i++
 						if !unicode.IsSpace(rune(data[i])) {
-							return i, data[0:i], nil
+							break
 						}
+						i++
 					}
 				}
 				return i, data[0:i], nil
@@ -130,6 +130,7 @@ func parse(tokens []string) (*Netrc, error) {
 			n.machines = append(n.machines, machine)
 			if token == "default" {
 				machine.IsDefault = true
+				machine.Name = "default"
 			} else {
 				machine.Name = tokens[i+2]
 			}

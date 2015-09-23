@@ -63,3 +63,30 @@ func (s *NetrcSuite) TestBadDefaultOrder(c *C) {
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
 }
+
+func (s *NetrcSuite) TestDefaultOnly(c *C) {
+	f, err := netrc.Parse("./examples/default_only.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("default").Get("login"), Equals, "ld")
+	c.Check(f.Machine("default").Get("password"), Equals, "pd")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}
+
+func (s *NetrcSuite) TestGood(c *C) {
+	f, err := netrc.Parse("./examples/good.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("mail.google.com").Get("login"), Equals, "joe@gmail.com")
+	c.Check(f.Machine("mail.google.com").Get("account"), Equals, "justagmail")
+	c.Check(f.Machine("mail.google.com").Get("password"), Equals, "somethingSecret")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}
+
+func (s *NetrcSuite) TestPassword(c *C) {
+	f, err := netrc.Parse("./examples/password.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("m").Get("password"), Equals, "p")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}
