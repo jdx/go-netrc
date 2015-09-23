@@ -58,6 +58,8 @@ func (s *NetrcSuite) TestBadDefaultOrder(c *C) {
 	c.Assert(err, IsNil)
 	c.Check(f.Machine("mail.google.com").Get("login"), Equals, "joe@gmail.com")
 	c.Check(f.Machine("mail.google.com").Get("password"), Equals, "somethingSecret")
+	c.Check(f.Machine("ray").Get("login"), Equals, "demo")
+	c.Check(f.Machine("ray").Get("password"), Equals, "mypassword")
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
 }
