@@ -44,6 +44,17 @@ func (s *NetrcSuite) TestSampleMulti(c *C) {
 	c.Check(f.Render(), Equals, string(body))
 }
 
+func (s *NetrcSuite) TestSampleMultiWithDefault(c *C) {
+	f, err := netrc.Parse("./examples/sample_multi_with_default.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("m").Get("login"), Equals, "lm")
+	c.Check(f.Machine("m").Get("password"), Equals, "pm")
+	c.Check(f.Machine("n").Get("login"), Equals, "ln")
+	c.Check(f.Machine("n").Get("password"), Equals, "pn")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}
+
 func (s *NetrcSuite) TestNewlineless(c *C) {
 	f, err := netrc.Parse("./examples/newlineless.netrc")
 	c.Assert(err, IsNil)
@@ -86,6 +97,15 @@ func (s *NetrcSuite) TestGood(c *C) {
 func (s *NetrcSuite) TestPassword(c *C) {
 	f, err := netrc.Parse("./examples/password.netrc")
 	c.Assert(err, IsNil)
+	c.Check(f.Machine("m").Get("password"), Equals, "p")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}
+
+func (s *NetrcSuite) TestPermissive(c *C) {
+	f, err := netrc.Parse("./examples/permissive.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("m").Get("login"), Equals, "l")
 	c.Check(f.Machine("m").Get("password"), Equals, "p")
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
