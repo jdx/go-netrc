@@ -150,7 +150,7 @@ func (m *Machine) Get(name string) string {
 		i = 2
 	}
 	for {
-		if i >= len(m.tokens) {
+		if i+2 >= len(m.tokens) {
 			return ""
 		}
 		if m.tokens[i] == name {
