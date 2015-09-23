@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"strings"
 	"unicode"
 )
 
@@ -17,21 +16,15 @@ var ErrInvalidNetrc = errors.New("Invalid netrc")
 // Netrc file
 type Netrc struct {
 	Path     string
-	Default  *Machine
 	machines []*Machine
-	preChars string
+	tokens   []string
 }
 
 // Machine from the netrc file
 type Machine struct {
-	Name       string
-	Login      string
-	Password   string
-	nameWS     string
-	loginWS    string
-	passwordWS string
-	postChars  string
-	isDefault  bool
+	Name      string
+	IsDefault bool
+	tokens    []string
 }
 
 // Parse the netrc file at the given path
@@ -62,12 +55,13 @@ func (n *Netrc) Machine(name string) *Machine {
 // Render out the netrc file to a string
 func (n *Netrc) Render() string {
 	var b bytes.Buffer
-	b.WriteString(n.preChars)
+	for _, token := range n.tokens {
+		b.WriteString(token)
+	}
 	for _, machine := range n.machines {
-		b.WriteString("machine " + machine.Name + machine.nameWS)
-		b.WriteString("login " + machine.Login + machine.loginWS)
-		b.WriteString("password " + machine.Password + machine.passwordWS)
-		b.WriteString(machine.postChars)
+		for _, token := range machine.tokens {
+			b.WriteString(token)
+		}
 	}
 	return b.String()
 }
@@ -77,7 +71,7 @@ func read(path string) (io.Reader, error) {
 	return os.Open(path)
 }
 
-func lex(file io.Reader) *bufio.Scanner {
+func lex(file io.Reader) []string {
 	commentRe := regexp.MustCompile("\\s*#")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(func(data []byte, eof bool) (int, []byte, error) {
@@ -117,56 +111,51 @@ func lex(file io.Reader) *bufio.Scanner {
 		}
 		return 0, nil, nil
 	})
-	return scanner
+	tokens := make([]string, 0, 100)
+	for scanner.Scan() {
+		tokens = append(tokens, scanner.Text())
+	}
+	return tokens
 }
 
-func parse(scanner *bufio.Scanner) (*Netrc, error) {
+func parse(tokens []string) (*Netrc, error) {
 	n := &Netrc{}
 	n.machines = make([]*Machine, 0, 20)
 	var machine *Machine
-	for scanner.Scan() {
-		token := scanner.Text()
-		if token == "default" {
-			machine = &Machine{}
-			n.Default = machine
-			n.machines = append(n.machines, machine)
-		}
-		if token == "machine" {
+	for i, token := range tokens {
+		// group tokens into machines
+		if token == "machine" || token == "default" {
+			// start new group
 			machine = &Machine{}
 			n.machines = append(n.machines, machine)
-			scanner.Scan()
-			if strings.Contains(scanner.Text(), "\n") {
-				return nil, ErrInvalidNetrc
-			}
-			scanner.Scan()
-			machine.Name = scanner.Text()
-			scanner.Scan()
-			machine.nameWS = scanner.Text()
-		} else if token == "login" {
-			scanner.Scan()
-			if strings.Contains(scanner.Text(), "\n") {
-				return nil, ErrInvalidNetrc
-			}
-			scanner.Scan()
-			machine.Login = scanner.Text()
-			scanner.Scan()
-			machine.loginWS = scanner.Text()
-		} else if token == "password" {
-			scanner.Scan()
-			if strings.Contains(scanner.Text(), "\n") {
-				return nil, ErrInvalidNetrc
-			}
-			scanner.Scan()
-			machine.Password = scanner.Text()
-			scanner.Scan()
-			machine.passwordWS = scanner.Text()
-		} else {
-			if machine == nil {
-				n.preChars += scanner.Text()
+			if token == "default" {
+				machine.IsDefault = true
 			} else {
-				machine.postChars += scanner.Text()
+				machine.Name = tokens[i+2]
 			}
+		}
+		if machine == nil {
+			n.tokens = append(n.tokens, token)
+		} else {
+			machine.tokens = append(machine.tokens, token)
 		}
 	}
 	return n, nil
+}
+
+// Get a property from a machine
+func (m *Machine) Get(name string) string {
+	i := 4
+	if m.IsDefault {
+		i = 2
+	}
+	for {
+		if i >= len(m.tokens) {
+			return ""
+		}
+		if m.tokens[i] == name {
+			return m.tokens[i+2]
+		}
+		i = i + 4
+	}
 }
