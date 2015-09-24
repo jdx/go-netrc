@@ -55,6 +55,19 @@ func (n *Netrc) Machine(name string) *Machine {
 	return nil
 }
 
+// AddMachine adds a machine
+func (n *Netrc) AddMachine(name, login, password string) {
+	machine := n.Machine(name)
+	if machine == nil {
+		machine = &Machine{}
+		n.machines = append(n.machines, machine)
+	}
+	machine.Name = name
+	machine.tokens = []string{"machine ", name, "\n"}
+	machine.Set("login", login)
+	machine.Set("password", password)
+}
+
 // RemoveMachine remove a machine
 func (n *Netrc) RemoveMachine(name string) {
 	for i, machine := range n.machines {

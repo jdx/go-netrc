@@ -38,6 +38,21 @@ func (s *NetrcSuite) TestSave(c *C) {
 	os.Remove("./examples/login-new.netrc")
 }
 
+func (s *NetrcSuite) TestAdd(c *C) {
+	f, err := netrc.Parse("./examples/login.netrc")
+	c.Assert(err, IsNil)
+	f.AddMachine("m", "l", "p")
+	c.Check(f.Render(), Equals, "# this is my login netrc\nmachine api.heroku.com\n  login jeff@heroku.com # this is my username\n  password foo\n"+
+		"machine m\n  login l\n  password p\n")
+}
+
+func (s *NetrcSuite) TestAddExisting(c *C) {
+	f, err := netrc.Parse("./examples/login.netrc")
+	c.Assert(err, IsNil)
+	f.AddMachine("api.heroku.com", "l", "p")
+	c.Check(f.Render(), Equals, "# this is my login netrc\nmachine api.heroku.com\n  login l\n  password p\n")
+}
+
 func (s *NetrcSuite) TestRemove(c *C) {
 	f, err := netrc.Parse("./examples/sample_multi.netrc")
 	c.Assert(err, IsNil)
