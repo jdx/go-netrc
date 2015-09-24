@@ -7,6 +7,8 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
 	"unicode"
 )
@@ -53,6 +55,15 @@ func (n *Netrc) Machine(name string) *Machine {
 	return nil
 }
 
+// RemoveMachine remove a machine
+func (n *Netrc) RemoveMachine(name string) {
+	for i, machine := range n.machines {
+		if machine.Name == name {
+			n.machines = append(n.machines[:i], n.machines[i+1:]...)
+		}
+	}
+}
+
 // Render out the netrc file to a string
 func (n *Netrc) Render() string {
 	var b bytes.Buffer
@@ -70,11 +81,37 @@ func (n *Netrc) Render() string {
 // Save the file to disk
 func (n *Netrc) Save() error {
 	body := []byte(n.Render())
+	if filepath.Ext(n.Path) == ".gpg" {
+		cmd := exec.Command("gpg", "-a", "--batch", "--default-recipient-self", "-e")
+		stdin, err := cmd.StdinPipe()
+		if err != nil {
+			return err
+		}
+		stdin.Write(body)
+		stdin.Close()
+		cmd.Stderr = os.Stderr
+		body, err = cmd.Output()
+		if err != nil {
+			return err
+		}
+	}
 	return ioutil.WriteFile(n.Path, body, 0600)
 }
 
 func read(path string) (io.Reader, error) {
-	// TODO: gpg decrypt
+	if filepath.Ext(path) == ".gpg" {
+		cmd := exec.Command("gpg", "--batch", "--quiet", "--decrypt", path)
+		cmd.Stderr = os.Stderr
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			return nil, err
+		}
+		err = cmd.Start()
+		if err != nil {
+			return nil, err
+		}
+		return stdout, nil
+	}
 	return os.Open(path)
 }
 

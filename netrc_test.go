@@ -38,6 +38,13 @@ func (s *NetrcSuite) TestSave(c *C) {
 	os.Remove("./examples/login-new.netrc")
 }
 
+func (s *NetrcSuite) TestRemove(c *C) {
+	f, err := netrc.Parse("./examples/sample_multi.netrc")
+	c.Assert(err, IsNil)
+	f.RemoveMachine("m")
+	c.Check(f.Render(), Equals, "# this is my netrc with multiple machines\nmachine n\n  login ln # this is my n-username\n  password pn\n")
+}
+
 func (s *NetrcSuite) TestSetPassword(c *C) {
 	f, err := netrc.Parse("./examples/login.netrc")
 	c.Assert(err, IsNil)
