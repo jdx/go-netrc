@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"unicode"
@@ -64,6 +65,12 @@ func (n *Netrc) Render() string {
 		}
 	}
 	return b.String()
+}
+
+// Save the file to disk
+func (n *Netrc) Save() error {
+	body := []byte(n.Render())
+	return ioutil.WriteFile(n.Path, body, 0600)
 }
 
 func read(path string) (io.Reader, error) {

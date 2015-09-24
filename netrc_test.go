@@ -2,6 +2,7 @@ package netrc_test
 
 import (
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/dickeyxxx/netrc"
@@ -23,6 +24,18 @@ func (s *NetrcSuite) TestLogin(c *C) {
 	c.Check(heroku.Get("password"), Equals, "foo")
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
+}
+
+func (s *NetrcSuite) TestSave(c *C) {
+	f, err := netrc.Parse("./examples/login.netrc")
+	c.Assert(err, IsNil)
+	f.Path = "./examples/login-new.netrc"
+	err = f.Save()
+	c.Assert(err, IsNil)
+	a, _ := ioutil.ReadFile("./examples/login-new.netrc")
+	b, _ := ioutil.ReadFile("./examples/login.netrc")
+	c.Check(string(a), Equals, string(b))
+	os.Remove("./examples/login-new.netrc")
 }
 
 func (s *NetrcSuite) TestSetPassword(c *C) {
