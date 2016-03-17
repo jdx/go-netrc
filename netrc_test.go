@@ -137,6 +137,14 @@ func (s *NetrcSuite) TestPassword(c *C) {
 	c.Check(f.Render(), Equals, string(body))
 }
 
+func (s *NetrcSuite) TestGetOctothorpe(c *C) {
+	f, err := netrc.Parse("./examples/octothorpe.netrc")
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("hash").Get("password"), Equals, "foo#bar$baz%boom")
+	body, _ := ioutil.ReadFile(f.Path)
+	c.Check(f.Render(), Equals, string(body))
+}
+
 func (s *NetrcSuite) TestPermissive(c *C) {
 	f, err := netrc.Parse("./examples/permissive.netrc")
 	c.Assert(err, IsNil)
