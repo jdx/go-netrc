@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/dickeyxxx/netrc"
+	"github.com/jdxcode/netrc"
 	. "gopkg.in/check.v1"
 )
 
@@ -144,11 +144,4 @@ func (s *NetrcSuite) TestPermissive(c *C) {
 	c.Check(f.Machine("m").Get("password"), Equals, "p")
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
-}
-
-func (s *NetrcSuite) TestRemoveFromComplicated(c *C) {
-	f, err := netrc.Parse("./examples/complicated.netrc")
-	c.Assert(err, IsNil)
-	f.RemoveMachine("git.heroku.com")
-	c.Assert(f.Machine("git.heroku.com"), IsNil)
 }
