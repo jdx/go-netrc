@@ -1,4 +1,4 @@
-# netrc [![Build Status](https://travis-ci.org/dickeyxxx/netrc.svg?branch=master)](https://travis-ci.org/dickeyxxx/netrc) [![GoDoc](https://godoc.org/github.com/dickeyxxx/netrc?status.svg)](http://godoc.org/github.com/dickeyxxx/netrc)
+# netrc [![Build Status](https://travis-ci.org/jdxcode/netrc.svg?branch=master)](https://travis-ci.org/jdxcode/netrc) [![GoDoc](https://godoc.org/github.com/jdxcode/netrc?status.svg)](http://godoc.org/github.com/jdxcode/netrc)
 
 A netrc parser for Go.
 
