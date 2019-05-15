@@ -135,6 +135,7 @@ func lex(file io.Reader) []string {
 	commentRe := regexp.MustCompile("\\s*#")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(func(data []byte, eof bool) (int, []byte, error) {
+		var loc []int
 		if eof && len(data) == 0 {
 			return 0, nil, nil
 		}
@@ -142,8 +143,8 @@ func lex(file io.Reader) []string {
 		for i, c := range data {
 			if c == '#' {
 				// line has a comment
-				i = commentRe.FindIndex(data)[0]
-				if i == 0 {
+				loc = commentRe.FindIndex(data)
+				if loc != nil && loc[0] == 0 {
 					// currently in a comment
 					i = bytes.IndexByte(data, '\n')
 					if i == -1 {
