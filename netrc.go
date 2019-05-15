@@ -160,8 +160,8 @@ func lex(file io.Reader) []string {
 						}
 						i++
 					}
+					return i, data[0:i], nil
 				}
-				return i, data[0:i], nil
 			}
 			if unicode.IsSpace(rune(c)) != inWhitespace {
 				return i, data[0:i], nil
