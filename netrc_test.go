@@ -141,6 +141,7 @@ func (s *NetrcSuite) TestGetOctothorpe(c *C) {
 	f, err := netrc.Parse("./examples/octothorpe.netrc")
 	c.Assert(err, IsNil)
 	c.Check(f.Machine("hash").Get("password"), Equals, "foo#bar$baz%boom")
+	c.Check(f.Machine("hash2").Get("password"), Equals, "foo#bar$baz%boom##")
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
 }
