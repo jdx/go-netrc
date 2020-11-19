@@ -30,6 +30,11 @@ type Machine struct {
 	tokens    []string
 }
 
+// New creates and returns a new empty Netrc for writing to.
+func New(p string) *Netrc {
+	return &Netrc{machines: make([]*Machine, 0, 20), Path: p}
+}
+
 // Parse the netrc file at the given path
 // It returns a Netrc instance
 func Parse(path string) (*Netrc, error) {

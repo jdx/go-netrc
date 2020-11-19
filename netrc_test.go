@@ -3,6 +3,7 @@ package netrc_test
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/jdxcode/netrc"
@@ -44,6 +45,13 @@ func (s *NetrcSuite) TestAdd(c *C) {
 	f.AddMachine("m", "l", "p")
 	c.Check(f.Render(), Equals, "# this is my login netrc\nmachine api.heroku.com\n  login jeff@heroku.com # this is my username\n  password foo\n"+
 		"machine m\n  login l\n  password p\n")
+}
+
+func (s *NetrcSuite) TestMachineSetWithEmptyFile(c *C) {
+	dir := c.MkDir()
+	n := netrc.New(filepath.Join(dir, ".netrc"))
+	n.AddMachine("api.heroku.com", "jeff@heroku.com", "foo")
+	c.Check(n.Render(), Equals, "machine api.heroku.com\n  login jeff@heroku.com\n  password foo\n")
 }
 
 func (s *NetrcSuite) TestAddExisting(c *C) {
