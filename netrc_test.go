@@ -1,6 +1,7 @@
 package netrc_test
 
 import (
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -161,4 +162,16 @@ func (s *NetrcSuite) TestPermissive(c *C) {
 	c.Check(f.Machine("m").Get("password"), Equals, "p")
 	body, _ := ioutil.ReadFile(f.Path)
 	c.Check(f.Render(), Equals, string(body))
+}
+
+func (s *NetrcSuite) TestParseString(c *C) {
+	file, err := os.Open("./examples/good.netrc")
+	defer file.Close()
+	data, err := io.ReadAll(file)
+	c.Assert(err, IsNil)
+	f, err := netrc.ParseString(string(data))
+	c.Assert(err, IsNil)
+	c.Check(f.Machine("mail.google.com").Get("login"), Equals, "joe@gmail.com")
+	c.Check(f.Machine("mail.google.com").Get("account"), Equals, "justagmail")
+	c.Check(f.Machine("mail.google.com").Get("password"), Equals, "somethingSecret")
 }

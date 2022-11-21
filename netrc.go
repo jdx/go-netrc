@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"unicode"
 )
 
@@ -47,6 +48,17 @@ func Parse(path string) (*Netrc, error) {
 		return nil, err
 	}
 	netrc.Path = path
+	return netrc, nil
+}
+
+// ParseString behaves just like Parse, but can be used to parse netrc data
+// without loading it from a file.
+func ParseString(contents string) (*Netrc, error) {
+	r := strings.NewReader(contents)
+	netrc, err := parse(lex(r))
+	if err != nil {
+		return nil, err
+	}
 	return netrc, nil
 }
 
