@@ -1,4 +1,4 @@
-module github.com/jdxcode/netrc
+module github.com/jdx/netrc
 
 go 1.15
 
