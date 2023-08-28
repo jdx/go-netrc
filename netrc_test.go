@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jdxcode/netrc"
+	"github.com/jdx/netrc"
 	. "gopkg.in/check.v1"
 )
 
