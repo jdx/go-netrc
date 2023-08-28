@@ -1,8 +1,10 @@
-module github.com/jdx/netrc
+module github.com/jdx/go-netrc
 
-go 1.15
+go 1.20
+
+require gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
 
 require (
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b
+	github.com/kr/pretty v0.2.1 // indirect
+	github.com/kr/text v0.1.0 // indirect
 )

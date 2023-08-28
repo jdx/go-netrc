@@ -1,4 +1,4 @@
-# netrc [![GoDoc](https://godoc.org/github.com/jdx/netrc?status.svg)](http://godoc.org/github.com/jdx/netrc) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/jdx/netrc/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/jdx/netrc/tree/master)
+# go-netrc [![GoDoc](https://godoc.org/github.com/jdx/go-netrc?status.svg)](http://godoc.org/github.com/jdx/go-netrc) [![CircleCI](https://dl.circleci.com/status-badge/img/gh/jdx/go-netrc/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/jdx/go-netrc/tree/main)
 
 A netrc parser for Go.
 
