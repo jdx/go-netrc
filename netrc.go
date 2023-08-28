@@ -20,7 +20,7 @@ var ErrInvalidNetrc = errors.New("Invalid netrc")
 // Netrc file
 type Netrc struct {
 	Path     string
-	machines []*Machine
+	machines Machines
 	tokens   []string
 }
 
@@ -30,10 +30,11 @@ type Machine struct {
 	IsDefault bool
 	tokens    []string
 }
+type Machines []*Machine
 
 // New creates and returns a new empty Netrc for writing to.
 func New(p string) *Netrc {
-	return &Netrc{machines: make([]*Machine, 0, 20), Path: p}
+	return &Netrc{machines: make(Machines, 0, 20), Path: p}
 }
 
 // Parse the netrc file at the given path
@@ -61,6 +62,12 @@ func ParseString(contents string) (*Netrc, error) {
 	}
 	return netrc, nil
 }
+
+// Machine gets a machine by name
+func (n *Netrc) Machines() Machines {
+	return n.machines
+}
+
 
 // Machine gets a machine by name
 func (n *Netrc) Machine(name string) *Machine {
@@ -199,7 +206,7 @@ func lex(file io.Reader) []string {
 
 func parse(tokens []string) (*Netrc, error) {
 	n := &Netrc{}
-	n.machines = make([]*Machine, 0, 20)
+	n.machines = make(Machines, 0, 20)
 	var machine *Machine
 	for i, token := range tokens {
 		// group tokens into machines
